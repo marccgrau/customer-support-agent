@@ -1,26 +1,26 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
-import { Moon, Sun, Check } from "lucide-react";
-import { useTheme } from "next-themes";
-import { themes } from "@/styles/themes";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Moon, Sun, Check } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { themes } from '@/styles/themes';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 const themeColors = {
-  neutral: "#000000",
-  red: "#EF4444",
-  violet: "#8B5CF6",
-  blue: "#3B82F6",
-  tangerine: "#F97316",
-  emerald: "#10B981",
-  amber: "#F59E0B",
+  neutral: '#000000',
+  red: '#EF4444',
+  violet: '#8B5CF6',
+  blue: '#3B82F6',
+  tangerine: '#F97316',
+  emerald: '#10B981',
+  amber: '#F59E0B',
 } as const;
 
 type ThemeName = keyof typeof themes;
@@ -33,12 +33,12 @@ const ColorCircle = ({
   isSelected: boolean;
 }) => (
   <div
-    className="relative border flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
+    className='relative border flex h-4 w-4 shrink-0 items-center justify-center rounded-full'
     style={{ backgroundColor: themeColors[themeName] }}
   >
     {isSelected && (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Check className="text-white" size={12} />
+      <div className='absolute inset-0 flex items-center justify-center'>
+        <Check className='text-white' size={12} />
       </div>
     )}
   </div>
@@ -46,15 +46,15 @@ const ColorCircle = ({
 
 const TopNavBar = () => {
   const { theme, setTheme } = useTheme();
-  const [colorTheme, setColorTheme] = useState<ThemeName>("neutral");
+  const [colorTheme, setColorTheme] = useState<ThemeName>('neutral');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const savedColorTheme = (localStorage.getItem("color-theme") ||
-      "neutral") as ThemeName;
+    const savedColorTheme = (localStorage.getItem('color-theme') ||
+      'neutral') as ThemeName;
     setColorTheme(savedColorTheme);
-    applyTheme(savedColorTheme, theme === "dark");
+    applyTheme(savedColorTheme, theme === 'dark');
   }, [theme]);
 
   const applyTheme = (newColorTheme: ThemeName, isDark: boolean) => {
@@ -70,14 +70,14 @@ const TopNavBar = () => {
 
   const handleThemeChange = (newColorTheme: ThemeName) => {
     setColorTheme(newColorTheme);
-    localStorage.setItem("color-theme", newColorTheme);
-    applyTheme(newColorTheme, theme === "dark");
+    localStorage.setItem('color-theme', newColorTheme);
+    applyTheme(newColorTheme, theme === 'dark');
   };
 
-  const handleModeChange = (mode: "light" | "dark" | "system") => {
+  const handleModeChange = (mode: 'light' | 'dark' | 'system') => {
     setTheme(mode);
-    if (mode !== "system") {
-      applyTheme(colorTheme, mode === "dark");
+    if (mode !== 'system') {
+      applyTheme(colorTheme, mode === 'dark');
     }
   };
 
@@ -86,28 +86,30 @@ const TopNavBar = () => {
   }
 
   return (
-    <nav className="text-foreground p-4 flex justify-between items-center">
-      <div className="font-bold text-xl flex gap-2 items-center">
+    <nav className='text-foreground p-4 flex justify-between items-center'>
+      <div className='font-bold text-xl flex gap-2 items-center'>
         <Image
-          src={theme === "dark" ? "/wordmark-dark.svg" : "/wordmark.svg"}
-          alt="Company Wordmark"
+          src={
+            theme === 'dark' ? '/hsg-logo-en-bw.svg' : '/hsg-logo-en-rgb.svg'
+          }
+          alt='Company Wordmark'
           width={112}
           height={20}
         />
       </div>
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+            <Button variant='outline'>
               <ColorCircle themeName={colorTheme} isSelected={false} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align='end'>
             {(Object.keys(themes) as ThemeName[]).map((themeName) => (
               <DropdownMenuItem
                 key={themeName}
                 onClick={() => handleThemeChange(themeName)}
-                className="flex items-center gap-2"
+                className='flex items-center gap-2'
               >
                 <ColorCircle
                   themeName={themeName}
@@ -120,31 +122,31 @@ const TopNavBar = () => {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
+            <Button variant='outline' size='icon'>
+              <Sun className='h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
+              <Moon className='absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
+              <span className='sr-only'>Toggle theme</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleModeChange("light")}>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem onClick={() => handleModeChange('light')}>
               Light
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleModeChange("dark")}>
+            <DropdownMenuItem onClick={() => handleModeChange('dark')}>
               Dark
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleModeChange("system")}>
+            <DropdownMenuItem onClick={() => handleModeChange('system')}>
               System
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <Link
-          href="https://github.com/anthropics/anthropic-quickstarts"
-          target="_blank"
-          rel="noopener noreferrer"
+          href='mailto:marcchristopher.grau@unisg.ch'
+          target='_blank'
+          rel='noopener noreferrer'
         >
-          <Button variant="outline" className="text-foreground">
-            Deploy your own
+          <Button variant='outline' className='text-foreground'>
+            Give us feedback
           </Button>
         </Link>
       </div>
