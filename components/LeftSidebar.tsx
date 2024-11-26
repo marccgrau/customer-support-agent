@@ -1,5 +1,3 @@
-// LeftSidebar.tsx
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -45,6 +43,7 @@ const getMoodColor = (mood: string): string => {
 
 const MAX_THINKING_HISTORY = 15;
 const MAX_EMOTION_SCORES = 100; // Number of emotion scores to keep for the trace
+const MOVING_AVERAGE_WINDOW = 5; // Number of observations for moving average
 
 // Animation classes and styles
 const fadeInUpClass = 'animate-fade-in-up';
@@ -77,6 +76,18 @@ const LeftSidebar: React.FC = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Compute smoothed emotion scores for the trace
+  const smoothedEmotionScores = emotionScores.map((_, index, arr) => {
+    const start = Math.max(0, index - MOVING_AVERAGE_WINDOW + 1);
+    const window = arr.slice(start, index + 1);
+    const average = window.reduce((sum, val) => sum + val, 0) / window.length;
+    return average;
+  });
+
+  // The current emotion value is the last value in smoothedEmotionScores
+  const currentEmotionValue =
+    smoothedEmotionScores[smoothedEmotionScores.length - 1] || 0.5; // Default to 0.5 if undefined
 
   useEffect(() => {
     const handleUpdateSidebar = (event: CustomEvent<ThinkingContent>) => {
@@ -227,7 +238,7 @@ const LeftSidebar: React.FC = () => {
 
         {/* Customer Emotion Section */}
         <Card
-          className={`${fadeInUpClass} overflow-hidden mt-4 flex-grow flex flex-col`}
+          className={`${fadeInUpClass} overflow-hidden mt-4`}
           style={fadeStyle}
         >
           <CardHeader>
@@ -246,7 +257,7 @@ const LeftSidebar: React.FC = () => {
                   strokeWidth='2'
                   strokeLinecap='round'
                   strokeLinejoin='round'
-                  points={emotionScores
+                  points={smoothedEmotionScores
                     .map((score, index) => {
                       // Adjust x to position current point more to the left
                       const x = (index / (MAX_EMOTION_SCORES - 1)) * 80; // 80 instead of 100
@@ -256,11 +267,11 @@ const LeftSidebar: React.FC = () => {
                     .join(' ')}
                 />
                 {/* Current Point */}
-                {emotionScores.length > 0 && (
+                {smoothedEmotionScores.length >= MOVING_AVERAGE_WINDOW && (
                   <circle
                     // Position current point at x=80 instead of x=100
                     cx='80'
-                    cy={(1 - emotionScores[emotionScores.length - 1]) * 50}
+                    cy={(1 - currentEmotionValue) * 50}
                     r='2'
                     fill='#000000' // Black color
                   />
