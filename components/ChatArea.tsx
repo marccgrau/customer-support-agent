@@ -233,7 +233,7 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
         <>
           <Avatar className='w-10 h-10 border'>
             <AvatarImage
-              src='/avatar.svg'
+              src='/bot.svg'
               alt='AI Assistant Avatar'
               width={40}
               height={40}
@@ -587,7 +587,7 @@ function ChatArea() {
             <div className='flex flex-col items-center justify-center h-full animate-fade-in-up'>
               <Avatar className='w-10 h-10 mb-4 border'>
                 <AvatarImage
-                  src='/avatar.svg'
+                  src='/bot.svg'
                   alt='AI Assistant Avatar'
                   width={40}
                   height={40}
@@ -637,10 +637,7 @@ function ChatArea() {
                   >
                     {message.role === 'assistant' && (
                       <Avatar className='w-8 h-8 mr-2 border'>
-                        <AvatarImage
-                          src='/ant-logo.svg'
-                          alt='AI Assistant Avatar'
-                        />
+                        <AvatarImage src='/bot.svg' alt='AI Assistant Avatar' />
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
                     )}

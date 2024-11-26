@@ -1,3 +1,5 @@
+// LeftSidebar.tsx
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -11,7 +13,10 @@ import {
   Scale,
   ChartBarBig,
   CircleHelp,
+  FileIcon,
+  MessageCircleIcon,
 } from 'lucide-react';
+import FullSourceModal from './FullSourceModal';
 
 interface ThinkingContent {
   id: string;
@@ -22,6 +27,42 @@ interface ThinkingContent {
     context_used: boolean;
   };
 }
+
+// Interfaces for Knowledge Base History
+interface RAGSource {
+  id: string;
+  fileName: string;
+  snippet: string;
+  score: number;
+  timestamp?: string;
+}
+
+interface RAGHistoryItem {
+  sources: RAGSource[];
+  timestamp: string;
+  query: string;
+}
+
+interface DebugInfo {
+  context_used: boolean;
+}
+
+interface SidebarEvent {
+  id: string;
+  content: string;
+  user_mood?: string;
+  debug?: DebugInfo;
+}
+
+const truncateSnippet = (text: string): string => {
+  return text?.length > 150 ? `${text.slice(0, 100)}...` : text || '';
+};
+
+const getScoreColor = (score: number): string => {
+  if (score > 0.6) return 'bg-green-100 text-green-800';
+  if (score > 0.4) return 'bg-yellow-100 text-yellow-800';
+  return 'bg-red-100 text-red-800';
+};
 
 const getDebugPillColor = (value: boolean): string => {
   return value
@@ -42,8 +83,7 @@ const getMoodColor = (mood: string): string => {
 };
 
 const MAX_THINKING_HISTORY = 15;
-const MAX_EMOTION_SCORES = 100; // Number of emotion scores to keep for the trace
-const MOVING_AVERAGE_WINDOW = 5; // Number of observations for moving average
+const MAX_HISTORY = 15;
 
 // Animation classes and styles
 const fadeInUpClass = 'animate-fade-in-up';
@@ -58,36 +98,11 @@ const LeftSidebar: React.FC = () => {
     []
   );
 
-  // Initialize emotionScores with pre-filled random values
-  const [emotionScores, setEmotionScores] = useState<number[]>(
-    Array.from({ length: MAX_EMOTION_SCORES }, () => Math.random())
-  );
-
-  useEffect(() => {
-    // Simulate emotion score changing every 200ms
-    const interval = setInterval(() => {
-      const randomScore = Math.random(); // Random score between 0 and 1
-
-      setEmotionScores((prevScores) => {
-        const newScores = [...prevScores.slice(1), randomScore]; // Remove first element, add new score at the end
-        return newScores;
-      });
-    }, 200);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Compute smoothed emotion scores for the trace
-  const smoothedEmotionScores = emotionScores.map((_, index, arr) => {
-    const start = Math.max(0, index - MOVING_AVERAGE_WINDOW + 1);
-    const window = arr.slice(start, index + 1);
-    const average = window.reduce((sum, val) => sum + val, 0) / window.length;
-    return average;
-  });
-
-  // The current emotion value is the last value in smoothedEmotionScores
-  const currentEmotionValue =
-    smoothedEmotionScores[smoothedEmotionScores.length - 1] || 0.5; // Default to 0.5 if undefined
+  // State for Knowledge Base History
+  const [ragHistory, setRagHistory] = useState<RAGHistoryItem[]>([]);
+  const [shouldShowSources, setShouldShowSources] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSource, setSelectedSource] = useState<RAGSource | null>(null);
 
   useEffect(() => {
     const handleUpdateSidebar = (event: CustomEvent<ThinkingContent>) => {
@@ -131,12 +146,158 @@ const LeftSidebar: React.FC = () => {
       );
   }, []);
 
+  // Effect for Knowledge Base History
+  useEffect(() => {
+    const updateRAGSources = (
+      event: CustomEvent<{
+        sources: RAGSource[];
+        query: string;
+        debug?: DebugInfo;
+      }>
+    ) => {
+      console.log('🔍 RAG event received:', event.detail);
+      const { sources, query, debug } = event.detail;
+
+      const shouldDisplaySources = debug?.context_used;
+
+      if (
+        Array.isArray(sources) &&
+        sources.length > 0 &&
+        shouldDisplaySources
+      ) {
+        const cleanedSources = sources.map((source) => ({
+          ...source,
+          snippet: source.snippet || 'No preview available',
+          fileName:
+            (source.fileName || '').replace(/_/g, ' ').replace('.txt', '') ||
+            'Unnamed',
+          timestamp: new Date().toISOString(),
+        }));
+
+        const historyItem: RAGHistoryItem = {
+          sources: cleanedSources,
+          timestamp: new Date().toISOString(),
+          query: query || 'Unknown query',
+        };
+
+        setRagHistory((prev) => {
+          const newHistory = [historyItem, ...prev];
+          return newHistory.slice(0, MAX_HISTORY);
+        });
+
+        console.log(
+          '🔍 Sources displayed:',
+          shouldDisplaySources ? 'YES' : 'NO'
+        );
+      }
+    };
+
+    const updateDebug = (event: CustomEvent<SidebarEvent>) => {
+      const debug = event.detail.debug;
+      const shouldShow = debug?.context_used ?? false;
+      setShouldShowSources(shouldShow);
+    };
+
+    window.addEventListener(
+      'updateRagSources' as any,
+      updateRAGSources as EventListener
+    );
+    window.addEventListener(
+      'updateSidebar' as any,
+      updateDebug as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        'updateRagSources' as any,
+        updateRAGSources as EventListener
+      );
+      window.removeEventListener(
+        'updateSidebar' as any,
+        updateDebug as EventListener
+      );
+    };
+  }, []);
+
+  const handleViewFullSource = (source: RAGSource) => {
+    setSelectedSource(source);
+    setIsModalOpen(true);
+  };
+
   return (
     <aside className='w-[20%] pl-4 overflow-hidden pb-4 h-full'>
       <div className='flex flex-col h-full'>
+        {/* Knowledge Base History Section */}
+        <Card
+          className={`${fadeInUpClass} overflow-hidden flex-grow`}
+          style={fadeStyle}
+        >
+          <CardHeader>
+            <CardTitle className='text-sm font-medium leading-none'>
+              Knowledge Base History
+            </CardTitle>
+          </CardHeader>
+          <CardContent className='overflow-y-auto h-full'>
+            {ragHistory.length === 0 && (
+              <div className='text-sm text-muted-foreground'>
+                The assistant will display sources here once finding them
+              </div>
+            )}
+            {ragHistory.map((historyItem, index) => (
+              <div
+                key={historyItem.timestamp}
+                className={`mb-6 ${fadeInUpClass}`}
+                style={{ ...fadeStyle, animationDelay: `${index * 50}ms` }}
+              >
+                <div className='flex items-center text-xs text-muted-foreground mb-2 gap-1'>
+                  <MessageCircleIcon
+                    size={14}
+                    className='text-muted-foreground'
+                  />
+                  <span>{historyItem.query}</span>
+                </div>
+                {historyItem.sources.map((source, sourceIndex) => (
+                  <Card
+                    key={source.id}
+                    className={`mb-2 ${fadeInUpClass}`}
+                    style={{
+                      ...fadeStyle,
+                      animationDelay: `${index * 100 + sourceIndex * 75}ms`,
+                    }}
+                  >
+                    <CardContent className='py-4'>
+                      <p className='text-sm text-muted-foreground'>
+                        {truncateSnippet(source.snippet)}
+                      </p>
+                      <div className='flex flex-col gap-2'>
+                        <div
+                          className={`${getScoreColor(
+                            source.score
+                          )} px-2 py-1 mt-4 rounded-full text-xs inline-block w-fit`}
+                        >
+                          {(source.score * 100).toFixed(0)}% match
+                        </div>
+                        <div
+                          className='inline-flex items-center mr-2 mt-2 text-muted-foreground text-xs py-0 cursor-pointer hover:text-gray-600'
+                          onClick={() => handleViewFullSource(source)}
+                        >
+                          <FileIcon className='w-4 h-4 min-w-[12px] min-h-[12px] mr-2' />
+                          <span className='text-xs underline'>
+                            {truncateSnippet(source.fileName || 'Unnamed')}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Assistant Thinking Section */}
         <Card
-          className={`${fadeInUpClass} overflow-hidden flex-grow flex flex-col`}
+          className={`${fadeInUpClass} overflow-hidden mt-4 flex-grow flex flex-col`}
           style={fadeStyle}
         >
           <CardHeader>
@@ -235,52 +396,14 @@ const LeftSidebar: React.FC = () => {
             )}
           </CardContent>
         </Card>
-
-        {/* Customer Emotion Section */}
-        <Card
-          className={`${fadeInUpClass} overflow-hidden mt-4`}
-          style={fadeStyle}
-        >
-          <CardHeader>
-            <CardTitle className='text-sm font-medium leading-none'>
-              Customer Emotion
-            </CardTitle>
-          </CardHeader>
-          <CardContent className='flex-grow flex flex-col justify-center items-center'>
-            {/* Emotion Line Chart */}
-            <div className='w-full h-full flex items-center justify-center'>
-              <svg viewBox='0 0 100 50' className='w-full h-full'>
-                {/* Gray Trace Line */}
-                <polyline
-                  fill='none'
-                  stroke='#D1D5DB' // Tailwind's gray-300
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  points={smoothedEmotionScores
-                    .map((score, index) => {
-                      // Adjust x to position current point more to the left
-                      const x = (index / (MAX_EMOTION_SCORES - 1)) * 80; // 80 instead of 100
-                      const y = (1 - score) * 50;
-                      return `${x},${y}`;
-                    })
-                    .join(' ')}
-                />
-                {/* Current Point */}
-                {smoothedEmotionScores.length >= MOVING_AVERAGE_WINDOW && (
-                  <circle
-                    // Position current point at x=80 instead of x=100
-                    cx='80'
-                    cy={(1 - currentEmotionValue) * 50}
-                    r='2'
-                    fill='#000000' // Black color
-                  />
-                )}
-              </svg>
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Full Source Modal */}
+      <FullSourceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        source={selectedSource}
+      />
     </aside>
   );
 };
