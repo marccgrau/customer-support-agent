@@ -1,3 +1,5 @@
+// LeftSidebar.tsx
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -12,9 +14,6 @@ import {
   ChartBarBig,
   CircleHelp,
 } from 'lucide-react';
-
-// Moved emotions array outside of the component
-const emotions = ['Happy', 'Sad', 'Angry', 'Confused', 'Neutral'];
 
 interface ThinkingContent {
   id: string;
@@ -45,6 +44,7 @@ const getMoodColor = (mood: string): string => {
 };
 
 const MAX_THINKING_HISTORY = 15;
+const MAX_EMOTION_SCORES = 100; // Number of emotion scores to keep for the trace
 
 // Animation classes and styles
 const fadeInUpClass = 'animate-fade-in-up';
@@ -58,17 +58,22 @@ const LeftSidebar: React.FC = () => {
   const [thinkingContents, setThinkingContents] = useState<ThinkingContent[]>(
     []
   );
-  const [currentEmotion, setCurrentEmotion] = useState<string>('Neutral');
+
+  // Initialize emotionScores with pre-filled random values
+  const [emotionScores, setEmotionScores] = useState<number[]>(
+    Array.from({ length: MAX_EMOTION_SCORES }, () => Math.random())
+  );
 
   useEffect(() => {
-    // Update customer emotion every 2 seconds
+    // Simulate emotion score changing every 200ms
     const interval = setInterval(() => {
-      setCurrentEmotion((prevEmotion) => {
-        const currentIndex = emotions.indexOf(prevEmotion);
-        const nextIndex = (currentIndex + 1) % emotions.length;
-        return emotions[nextIndex];
+      const randomScore = Math.random(); // Random score between 0 and 1
+
+      setEmotionScores((prevScores) => {
+        const newScores = [...prevScores.slice(1), randomScore]; // Remove first element, add new score at the end
+        return newScores;
       });
-    }, 2000);
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
@@ -115,22 +120,12 @@ const LeftSidebar: React.FC = () => {
       );
   }, []);
 
-  const getEmotionColor = (emotion: string): string => {
-    const colors: { [key: string]: string } = {
-      Happy: 'text-green-600',
-      Sad: 'text-blue-600',
-      Angry: 'text-red-600',
-      Confused: 'text-yellow-600',
-      Neutral: 'text-gray-600',
-    };
-    return colors[emotion] || 'text-gray-600';
-  };
-
   return (
     <aside className='w-[20%] pl-4 overflow-hidden pb-4 h-full'>
       <div className='flex flex-col h-full'>
+        {/* Assistant Thinking Section */}
         <Card
-          className={`${fadeInUpClass} overflow-hidden flex-grow`}
+          className={`${fadeInUpClass} overflow-hidden flex-grow flex flex-col`}
           style={fadeStyle}
         >
           <CardHeader>
@@ -138,7 +133,7 @@ const LeftSidebar: React.FC = () => {
               Assistant Thinking
             </CardTitle>
           </CardHeader>
-          <CardContent className='overflow-y-auto h-full'>
+          <CardContent className='overflow-y-auto flex-grow'>
             {thinkingContents.length === 0 ? (
               <div className='text-sm text-muted-foreground'>
                 The assistant inner dialogue will appear here for you to debug
@@ -230,8 +225,9 @@ const LeftSidebar: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Customer Emotion Section */}
         <Card
-          className={`${fadeInUpClass} overflow-hidden mt-4 flex-grow`}
+          className={`${fadeInUpClass} overflow-hidden mt-4 flex-grow flex flex-col`}
           style={fadeStyle}
         >
           <CardHeader>
@@ -239,13 +235,37 @@ const LeftSidebar: React.FC = () => {
               Customer Emotion
             </CardTitle>
           </CardHeader>
-          <CardContent className='overflow-y-auto flex items-center justify-center h-full'>
-            <div
-              className={`text-4xl font-bold animate-pulse ${getEmotionColor(
-                currentEmotion
-              )}`}
-            >
-              {currentEmotion}
+          <CardContent className='flex-grow flex flex-col justify-center items-center'>
+            {/* Emotion Line Chart */}
+            <div className='w-full h-full flex items-center justify-center'>
+              <svg viewBox='0 0 100 50' className='w-full h-full'>
+                {/* Gray Trace Line */}
+                <polyline
+                  fill='none'
+                  stroke='#D1D5DB' // Tailwind's gray-300
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  points={emotionScores
+                    .map((score, index) => {
+                      // Adjust x to position current point more to the left
+                      const x = (index / (MAX_EMOTION_SCORES - 1)) * 80; // 80 instead of 100
+                      const y = (1 - score) * 50;
+                      return `${x},${y}`;
+                    })
+                    .join(' ')}
+                />
+                {/* Current Point */}
+                {emotionScores.length > 0 && (
+                  <circle
+                    // Position current point at x=80 instead of x=100
+                    cx='80'
+                    cy={(1 - emotionScores[emotionScores.length - 1]) * 50}
+                    r='2'
+                    fill='#000000' // Black color
+                  />
+                )}
+              </svg>
             </div>
           </CardContent>
         </Card>
