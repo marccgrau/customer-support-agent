@@ -306,12 +306,11 @@ function ChatArea() {
   const [showAvatar, setShowAvatar] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [selectedKnowledgeBase, setSelectedKnowledgeBase] = useState(
-    'your-knowledge-base-id'
-  );
+  const [selectedKnowledgeBase, setSelectedKnowledgeBase] =
+    useState('HHCPVMC1YV');
 
   const knowledgeBases: KnowledgeBase[] = [
-    { id: 'your-knowledge-base-id', name: 'Your KB Name' },
+    { id: 'HHCPVMC1YV', name: 'MB Knowledge' },
     // Add more knowledge bases as needed
   ];
 
