@@ -201,50 +201,6 @@ const RightSidebar: React.FC = () => {
             ))}
           </CardContent>
         </Card>
-
-        {/* Customer Emotion Section */}
-        <Card
-          className={`${fadeInUpClass} overflow-hidden mt-4`}
-          style={fadeStyle}
-        >
-          <CardHeader>
-            <CardTitle className='text-sm font-medium leading-none'>
-              Customer Emotion
-            </CardTitle>
-          </CardHeader>
-          <CardContent className='flex flex-col justify-center items-center'>
-            {/* Emotion Line Chart */}
-            <div className='w-full h-full flex items-center justify-center'>
-              <svg viewBox='0 0 100 50' className='w-full h-full'>
-                {/* Gray Trace Line */}
-                <polyline
-                  fill='none'
-                  stroke='#D1D5DB' // Tailwind's gray-300
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  points={smoothedEmotionScores
-                    .map((score, index) => {
-                      const x = (index / (MAX_EMOTION_SCORES - 1)) * 80; // 80 instead of 100
-                      const y = (1 - score) * 50;
-                      return `${x},${y}`;
-                    })
-                    .join(' ')}
-                />
-                {/* Current Point */}
-                {smoothedEmotionScores.length >= MOVING_AVERAGE_WINDOW && (
-                  <circle
-                    // Position current point at x=80 instead of x=100
-                    cx='80'
-                    cy={(1 - currentEmotionValue) * 50}
-                    r='2'
-                    fill='#000000' // Black color
-                  />
-                )}
-              </svg>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </aside>
   );
