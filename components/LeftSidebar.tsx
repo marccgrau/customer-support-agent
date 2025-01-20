@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import ProcessTree from './ProcessTree';
 import {
   Users,
   Building2,
@@ -179,8 +179,11 @@ const LeftSidebar: React.FC = () => {
   }, []);
 
   return (
-    <aside className='w-[400px] pl-4 overflow-hidden pb-4 flex flex-col h-full'>
+    <aside className='w-[400px] pl-4 pb-4 flex flex-col h-full'>
       <div className='flex flex-col gap-4'>
+        {/* Support Process */}
+        <ProcessTree />
+
         {/* Account Network Structure */}
         <CollapsibleSection
           title='Account Network'
@@ -271,8 +274,7 @@ const LeftSidebar: React.FC = () => {
             ))}
           </div>
         </CollapsibleSection>
-
-        {/* Support Network */}
+        {/* Support Network 
         <CollapsibleSection
           title='Support Network'
           icon={<Users className='h-4 w-4' />}
@@ -327,6 +329,7 @@ const LeftSidebar: React.FC = () => {
             ))}
           </div>
         </CollapsibleSection>
+        */}
 
         {/* Knowledge Base History */}
         <CollapsibleSection

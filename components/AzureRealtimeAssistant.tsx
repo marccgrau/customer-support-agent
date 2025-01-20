@@ -3,282 +3,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useChat } from 'ai/react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  Minimize,
-  Maximize,
-  Mic,
-  MessageCircle,
-  Lightbulb,
-  User,
-} from 'lucide-react';
+import ConversationCard from './ConversationCard';
+import SuggestionsCard from './SuggestionsCard';
+import ProcessTree from './ProcessTree';
+import { BrainCircuit } from 'lucide-react';
 import { azureSpeechService } from '../lib/azureSpeechService';
-
-// Type Definitions
-interface TranscribedSegment {
-  text: string;
-  timestamp: number;
-  isPartial: boolean;
-  speakerId: string;
-}
-
-interface ApiResponse {
-  id: string;
-  response: string;
-  thinking: string;
-  user_mood:
-    | 'positive'
-    | 'neutral'
-    | 'negative'
-    | 'curious'
-    | 'frustrated'
-    | 'confused';
-  suggested_questions: string[];
-  debug: {
-    context_used: boolean;
-  };
-  matched_categories?: string[];
-  redirect_to_agent?: {
-    should_redirect: boolean;
-    reason?: string;
-  };
-}
-
-interface ConversationMessage {
-  id: string;
-  timestamp: number;
-  text: string;
-  speakerId: string;
-  type: 'user' | 'system';
-}
-
-interface SuggestionMessage {
-  id: string;
-  timestamp: number;
-  response: ApiResponse;
-}
-
-interface MessageHistory {
-  conversations: ConversationMessage[];
-  suggestions: SuggestionMessage[];
-}
-
-// Component Props
-interface ConversationCardProps {
-  messageHistory: MessageHistory;
-  currentTranscript: string;
-  isListening: boolean;
-  toggleListening: () => Promise<void>;
-  isLoading: boolean;
-}
-
-interface SuggestionsCardProps {
-  messageHistory: MessageHistory;
-  isLoading: boolean;
-}
-
-interface RealtimeAssistantProps {
-  selectedKnowledgeBase?: string;
-  selectedModel?: string;
-}
-
-// Conversation Card Component
-const ConversationCard: React.FC<ConversationCardProps> = ({
-  messageHistory,
-  currentTranscript,
-  isListening,
-  toggleListening,
-  isLoading,
-}) => (
-  <Card className='flex-1 flex flex-col overflow-hidden'>
-    <CardHeader className='p-4 flex flex-row items-center justify-between'>
-      <div className='flex items-center gap-2'>
-        <MessageCircle className='h-4 w-4' />
-        <CardTitle className='text-sm font-medium'>
-          Conversation History
-        </CardTitle>
-      </div>
-      <Button
-        variant={isListening ? 'destructive' : 'outline'}
-        size='sm'
-        onClick={toggleListening}
-        className='h-8 w-8 p-0'
-        disabled={isLoading}
-      >
-        <Mic className='h-4 w-4' />
-      </Button>
-    </CardHeader>
-    <CardContent className='flex-1 overflow-y-auto p-4'>
-      <div className='space-y-4'>
-        {messageHistory.conversations.map((message) => (
-          <div key={message.id} className='flex items-start gap-2'>
-            <Avatar className='h-8 w-8'>
-              <AvatarFallback>
-                <User className='h-4 w-4' />
-              </AvatarFallback>
-            </Avatar>
-            <div className='flex flex-col flex-1'>
-              <div className='text-xs text-muted-foreground'>
-                Speaker {message.speakerId} •{' '}
-                {new Date(message.timestamp).toLocaleTimeString()}
-              </div>
-              <div className='p-3 bg-muted rounded-lg text-sm'>
-                {message.text}
-              </div>
-            </div>
-          </div>
-        ))}
-        {currentTranscript && (
-          <div className='p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground'>
-            {currentTranscript}
-          </div>
-        )}
-        {isLoading && (
-          <div className='flex items-center justify-center'>
-            <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-primary'></div>
-          </div>
-        )}
-      </div>
-    </CardContent>
-  </Card>
-);
-
-// Suggestions Card Component
-const SuggestionsCard: React.FC<SuggestionsCardProps> = ({
-  messageHistory,
-  isLoading,
-}) => (
-  <Card className='flex-1 flex flex-col overflow-hidden'>
-    <CardHeader className='p-4 flex flex-row items-center justify-between border-b'>
-      <div className='flex items-center gap-2'>
-        <Lightbulb className='h-4 w-4' />
-        <CardTitle className='text-sm font-medium'>
-          AI Insights History
-        </CardTitle>
-      </div>
-    </CardHeader>
-    <CardContent className='flex-1 overflow-y-auto p-4'>
-      {isLoading ? (
-        <div className='flex items-center justify-center h-full'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
-        </div>
-      ) : messageHistory.suggestions.length > 0 ? (
-        <div className='space-y-8'>
-          {messageHistory.suggestions.map((suggestion) => (
-            <div key={suggestion.id} className='space-y-6'>
-              <div className='text-xs text-muted-foreground'>
-                {new Date(suggestion.timestamp).toLocaleString()}
-              </div>
-
-              {/* Response Card */}
-              <Card className='border shadow-sm'>
-                <CardHeader className='p-3 border-b bg-muted/30'>
-                  <div className='flex items-center justify-between'>
-                    <div className='text-sm font-medium'>Agent Guidance</div>
-                    <div className='flex gap-2'>
-                      {suggestion.response.matched_categories?.map(
-                        (category) => (
-                          <span
-                            key={category}
-                            className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs'
-                          >
-                            {category}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className='p-4'>
-                  <p className='text-sm whitespace-pre-wrap'>
-                    {suggestion.response.response}
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Thinking Process Card */}
-              <Card className='border shadow-sm'>
-                <CardHeader className='p-3 border-b bg-muted/30'>
-                  <div className='flex items-center justify-between'>
-                    <div className='text-sm font-medium'>Analysis</div>
-                    <div className='flex items-center gap-2'>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          {
-                            positive: 'bg-green-100 text-green-800',
-                            negative: 'bg-red-100 text-red-800',
-                            neutral: 'bg-gray-100 text-gray-800',
-                            curious: 'bg-blue-100 text-blue-800',
-                            frustrated: 'bg-orange-100 text-orange-800',
-                            confused: 'bg-yellow-100 text-yellow-800',
-                          }[suggestion.response.user_mood]
-                        }`}
-                      >
-                        {suggestion.response.user_mood.charAt(0).toUpperCase() +
-                          suggestion.response.user_mood.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className='p-4'>
-                  <p className='text-sm text-muted-foreground'>
-                    {suggestion.response.thinking}
-                  </p>
-                </CardContent>
-              </Card>
-
-              {/* Suggested Questions */}
-              {suggestion.response.suggested_questions.length > 0 && (
-                <Card className='border shadow-sm'>
-                  <CardHeader className='p-3 border-b bg-muted/30'>
-                    <div className='text-sm font-medium'>
-                      Suggested Follow-ups
-                    </div>
-                  </CardHeader>
-                  <CardContent className='p-4'>
-                    <div className='space-y-2'>
-                      {suggestion.response.suggested_questions.map(
-                        (question, index) => (
-                          <div
-                            key={index}
-                            className='p-3 bg-muted/30 rounded-lg text-sm hover:bg-muted/40 transition-colors cursor-pointer'
-                          >
-                            {question}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Redirection Alert */}
-              {suggestion.response.redirect_to_agent?.should_redirect && (
-                <Card className='border-red-200 bg-red-50'>
-                  <CardHeader className='p-3 border-b border-red-200 bg-red-100/50'>
-                    <div className='text-sm font-medium text-red-800'>
-                      Agent Redirection Required
-                    </div>
-                  </CardHeader>
-                  <CardContent className='p-4'>
-                    <p className='text-sm text-red-700'>
-                      {suggestion.response.redirect_to_agent.reason}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className='flex items-center justify-center h-full text-muted-foreground text-sm'>
-          Waiting for conversation to begin...
-        </div>
-      )}
-    </CardContent>
-  </Card>
-);
+import config from '@/config';
+import { mockMessageHistory } from './data/mockData';
+import { RealtimeAssistantProps, MessageHistory, ApiResponse } from '../types';
+import CollapsibleLayout from './ui/collapsible-layout';
 
 // Main Component
 const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
@@ -291,10 +24,13 @@ const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
   const [error, setError] = useState<Error | null>(null);
 
   // Message history state
-  const [messageHistory, setMessageHistory] = useState<MessageHistory>({
-    conversations: [],
-    suggestions: [],
-  });
+  const [messageHistory, setMessageHistory] = useState<MessageHistory>(
+    config.includeMockMessages
+      ? mockMessageHistory
+      : { conversations: [], suggestions: [] }
+  );
+
+  console.log('Initial message history:', messageHistory);
 
   // Handle API response processing
   const processApiResponse = (content: any) => {
@@ -523,63 +259,46 @@ const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
   }, [messageHistory]);
 
   return (
-    <div className='flex-1 flex flex-col mb-4 mr-4 ml-4 overflow-hidden'>
-      <Card className='flex-1 flex flex-col overflow-hidden'>
-        <CardContent className='flex-1 flex flex-col overflow-hidden pt-4 px-4 pb-0'>
-          <div className='flex items-center justify-between mb-4'>
+    <div className='h-full'>
+      <Card className='h-full flex flex-col'>
+        <CardHeader className='p-4 flex flex-row items-center justify-between border-b flex-shrink-0'>
+          <div className='flex items-center'>
+            <div className='flex items-center gap-2'>
+              <BrainCircuit className='h-5 w-5 text-primary' />
+              <CardTitle>Conversation</CardTitle>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className='flex-1 p-4 overflow-auto'>
+          <div className='flex flex-col h-full'>
             {error && (
-              <div className='text-destructive text-sm'>
+              <div className='mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm'>
                 Error: {error.message}
               </div>
             )}
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setIsMinimized(!isMinimized)}
-              className='h-8 w-8 p-0 ml-auto'
-            >
-              {isMinimized ? (
-                <Maximize className='h-4 w-4' />
-              ) : (
-                <Minimize className='h-4 w-4' />
-              )}
-            </Button>
-          </div>
 
-          {!isMinimized && (
-            <div className='flex-1 flex gap-4 overflow-hidden'>
-              <ConversationCard
-                messageHistory={messageHistory}
-                currentTranscript={currentTranscript}
-                isListening={isListening}
-                toggleListening={toggleListening}
-                isLoading={isLoading}
-              />
-              <SuggestionsCard
-                messageHistory={messageHistory}
-                isLoading={isLoading}
-              />
-            </div>
-          )}
+            <CollapsibleLayout
+              conversationCard={
+                <ConversationCard
+                  messageHistory={messageHistory}
+                  currentTranscript={currentTranscript}
+                  isListening={isListening}
+                  toggleListening={toggleListening}
+                  isLoading={isLoading}
+                />
+              }
+              processTree={<ProcessTree />}
+              suggestionsCard={
+                <SuggestionsCard
+                  messageHistory={messageHistory}
+                  isLoading={isLoading}
+                />
+              }
+            />
+          </div>
         </CardContent>
       </Card>
-
-      {/* Debug output */}
-      <div className='hidden'>
-        <pre>
-          {JSON.stringify(
-            {
-              conversations: messageHistory.conversations.length,
-              suggestions: messageHistory.suggestions.length,
-              isListening,
-              isLoading,
-              hasError: !!error,
-            },
-            null,
-            2
-          )}
-        </pre>
-      </div>
     </div>
   );
 };
