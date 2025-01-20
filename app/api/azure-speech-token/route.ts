@@ -12,7 +12,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ token: key, region });
+    return NextResponse.json({ key, region });
   } catch (error) {
     console.error('Error getting speech token:', error);
     return NextResponse.json(
