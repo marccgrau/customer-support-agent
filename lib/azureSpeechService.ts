@@ -11,18 +11,15 @@ export class AzureSpeechService {
   async initialize() {
     try {
       // Get credentials from environment variables
-      const response = await fetch('/api/speech-token');
-      const { token, region } = await response.json();
+      const response = await fetch('/api/azure-speech-token');
+      const { key, region } = await response.json();
 
-      if (!token || !region) {
+      if (!key || !region) {
         throw new Error('No speech token or region available');
       }
 
       console.log('🔑 Initializing Azure Speech Service...');
-      this.speechConfig = sdk.SpeechConfig.fromAuthorizationToken(
-        token,
-        region
-      );
+      this.speechConfig = sdk.SpeechConfig.fromSubscription(key, region);
       this.speechConfig.speechRecognitionLanguage = 'en-US';
 
       // Enable speaker diarization
