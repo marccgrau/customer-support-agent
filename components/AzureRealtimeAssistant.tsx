@@ -12,6 +12,7 @@ import config from '@/config';
 import { mockMessageHistory } from './data/mockData';
 import { RealtimeAssistantProps, MessageHistory, ApiResponse } from '../types';
 import CollapsibleLayout from './ui/collapsible-layout';
+import ConvoSuggestCard from './ConvoSuggestCard';
 
 // Main Component
 const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
@@ -280,7 +281,7 @@ const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
 
             <CollapsibleLayout
               conversationCard={
-                <ConversationCard
+                <ConvoSuggestCard
                   messageHistory={messageHistory}
                   currentTranscript={currentTranscript}
                   isListening={isListening}
@@ -289,12 +290,6 @@ const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
                 />
               }
               processTree={<ProcessTree />}
-              suggestionsCard={
-                <SuggestionsCard
-                  messageHistory={messageHistory}
-                  isLoading={isLoading}
-                />
-              }
             />
           </div>
         </CardContent>

@@ -74,18 +74,15 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 interface CollapsibleLayoutProps {
   conversationCard: React.ReactNode;
   processTree: React.ReactNode;
-  suggestionsCard: React.ReactNode;
 }
 
 const CollapsibleLayout: React.FC<CollapsibleLayoutProps> = ({
   conversationCard,
   processTree,
-  suggestionsCard,
 }) => {
   const [collapsedSections, setCollapsedSections] = useState({
     conversation: false,
     processTree: false,
-    suggestions: false,
   });
 
   const toggleSection = (section: keyof typeof collapsedSections) => {
@@ -101,14 +98,7 @@ const CollapsibleLayout: React.FC<CollapsibleLayoutProps> = ({
   ).length;
 
   const getExpandedWidth = () => {
-    switch (expandedCount) {
-      case 1:
-        return 'w-full';
-      case 2:
-        return 'w-1/2';
-      default:
-        return 'w-1/3';
-    }
+    return expandedCount === 1 ? 'w-full' : 'w-1/2';
   };
 
   return (
@@ -129,15 +119,6 @@ const CollapsibleLayout: React.FC<CollapsibleLayoutProps> = ({
         expandedWidth={getExpandedWidth()}
       >
         {processTree}
-      </CollapsibleSection>
-
-      <CollapsibleSection
-        title='AI Insights'
-        isCollapsed={collapsedSections.suggestions}
-        onToggle={() => toggleSection('suggestions')}
-        expandedWidth={getExpandedWidth()}
-      >
-        {suggestionsCard}
       </CollapsibleSection>
     </div>
   );

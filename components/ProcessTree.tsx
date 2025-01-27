@@ -19,14 +19,14 @@ const ProcessTree = () => {
     },
     {
       id: '3',
-      title: 'Check Account Activity',
-      description: 'Review recent transactions and changes',
+      title: 'Verify Customer Identity',
+      description: 'Perform security checks and authentication',
       resolved: false,
     },
     {
       id: '4',
-      title: 'Verify Customer Identity',
-      description: 'Perform security checks and authentication',
+      title: 'Check Account Activity',
+      description: 'Review recent transactions and changes',
       resolved: false,
     },
     {

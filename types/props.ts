@@ -17,3 +17,11 @@ export interface ConversationCardProps {
   toggleListening: () => Promise<void>;
   isLoading: boolean;
 }
+
+export interface ConvoSuggestCardProps {
+  messageHistory: MessageHistory;
+  currentTranscript: string;
+  isListening: boolean;
+  toggleListening: () => Promise<void>;
+  isLoading: boolean;
+}
