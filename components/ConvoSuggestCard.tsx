@@ -128,28 +128,44 @@ const ConvoSuggestCard: React.FC<ConvoSuggestCardProps> = ({
               </div>
             ) : (
               hasSuggestions && (
-                <div className='pl-10 space-y-3'>
-                  <div className='text-sm text-muted-foreground font-medium flex items-center gap-2'>
-                    <Lightbulb className='h-4 w-4' />
-                    Suggested next steps:
-                  </div>
-                  {latestSuggestion.response.suggested_questions.map(
-                    (question, index) => (
-                      <div
-                        key={index}
-                        className='group relative bg-primary/5 hover:bg-primary/10 rounded-lg p-3 transition-colors cursor-pointer border border-primary/10 hover:border-primary/20'
-                      >
-                        <div className='flex items-start gap-3'>
-                          <div className='flex-1'>
-                            <div className='text-sm text-primary group-hover:text-primary/80 transition-colors'>
-                              {question}
-                            </div>
-                          </div>
-                        </div>
+                <Card className='relative border border-primary shadow-sm overflow-hidden'>
+                  <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary' />
+                  <CardContent className='p-4'>
+                    {/* Header with number and title */}
+                    <div className='flex items-center gap-4 mb-4'>
+                      <div className='w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-primary text-primary'>
+                        <Lightbulb className='h-3.5 w-3.5' />
                       </div>
-                    )
-                  )}
-                </div>
+                      <div className='text-sm font-medium text-primary'>
+                        Suggested responses
+                      </div>
+                    </div>
+
+                    {/* Suggestions */}
+                    <div className='ml-10 space-y-2'>
+                      {latestSuggestion.response.suggested_questions.map(
+                        (question, index) => (
+                          <div
+                            key={index}
+                            className={`flex items-center gap-3 p-2 text-sm
+                            ${
+                              index === 0
+                                ? 'text-foreground font-medium'
+                                : 'text-muted-foreground hover:text-foreground transition-colors'
+                            }`}
+                          >
+                            <div
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                index === 0 ? 'bg-primary' : 'bg-primary/40'
+                              }`}
+                            />
+                            <span>{question}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               )
             )}
           </div>
