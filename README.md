@@ -74,12 +74,13 @@ To get started with the project on your local machine, follow these steps:
 
    - **Anthropic API Key**: This is needed to call Claude. Obtain it by signing up at Anthropic and generating an API key from the Anthropic console. Paste the key value after `ANTHROPIC_API_KEY=`.
    - **AWS Credentials**: The app uses Amazon Bedrock’s API, which requires AWS credentials with Bedrock access. You can use an existing AWS Access Key and Secret, or create a new IAM user with the AmazonBedrockFullAccess policy. Put the access key ID in `BAWS_ACCESS_KEY_ID` and secret in `BAWS_SECRET_ACCESS_KEY`. (Note: The prefix “BAWS” is intentional – it stands for Bedrock AWS – to avoid conflict with deployment services that restrict env vars starting with “AWS”.)
+   - **Azure Speech Service**: If you plan to use voice input/output, you need to configure Azure Speech Service. Obtain the key and region from the Azure portal and set `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` respectively.
    - **(Optional) Knowledge Base ID**: If you have a specific Knowledge Base you want to use by default, you may set an env var (e.g. `KNOWLEDGE_BASE_ID`) and update the code to use it. In this project, knowledge base selection is handled in code rather than via env, so this is optional. By default, you’ll manually configure the knowledge base IDs in the source (see Knowledge Base Setup below).
 
 4. **Knowledge Base Setup** – Before running the app, ensure you have access to Amazon Bedrock and have created a knowledge base:
 
    - Log in to your AWS account (that has Bedrock access) and navigate to Amazon Bedrock in the AWS Console.
-   - Create a Knowledge Base in your desired region and index your documents or FAQs into it (for example, upload PDF manuals or text files to the knowledge base via S3). Note the Knowledge Base ID that gets generated (it will look like `kb-XXXXXXXXXXXXXXXX`).
+   - Create a Knowledge Base in your desired region and index your documents or FAQs into it (for example, upload PDF manuals or text files to the knowledge base via S3). Note the Knowledge Base ID that gets generated.
    - Open the file `ChatArea.tsx` (under `components/` or `app/` directory) in the project, and find the `knowledgeBases` array definition. By default it contains a placeholder entry:
      ```typescript
      const knowledgeBases: KnowledgeBase[] = [
@@ -212,5 +213,3 @@ If the bot isn’t responding or you encounter errors:
 ### Contributing
 
 This project is provided as a reference implementation (a quickstart). It may not be fully production-hardened and could contain bugs or areas for improvement. Contributions or forks are welcome if you plan to adapt it. Before using this in a real production scenario, thorough testing and possibly some adjustments (like adding authentication, rate limiting, better error handling, etc.) are recommended. Keep in mind that this is a prototype and comes with no warranties – use it as a starting point for your own customer support AI agent.
-
-Lastly, always monitor the AI’s outputs if deploying to end-users. Ensure it’s providing accurate support information and handoff is working for failed cases. With the right configuration and data, this Customer Support Agent can significantly streamline support tasks while keeping human agents in the loop for the tough questions. Enjoy building with it!
