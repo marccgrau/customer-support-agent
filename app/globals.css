@@ -4,59 +4,69 @@
 
 @layer base {
   :root {
-    /* Tangerine theme from themes.js */
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
+    /* Darker Blue-Gray Modern Theme */
+    --background: 215 25% 97%;
+    --foreground: 215 14.3% 14.1%;
     --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    --card-foreground: 215 14.3% 14.1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
-    --primary: 24.6 95% 53.1%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
+    --popover-foreground: 215 14.3% 14.1%;
+    --primary: 215 95% 50%;
+    --primary-foreground: 215 9.1% 97.8%;
+    --secondary: 215 4.8% 95.9%;
+    --secondary-foreground: 215 9.8% 15%;
+    --muted: 215 4.8% 95.9%;
+    --muted-foreground: 215 5.3% 44.7%;
+    --accent: 215 95% 90%;
+    --accent-foreground: 215 9.8% 15%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 24.6 95% 53.1%;
+    --destructive-foreground: 215 9.1% 97.8%;
+    --border: 215 5.9% 90%;
+    --input: 215 5.9% 90%;
+    --ring: 215 95% 50%;
     --radius: 1rem;
-    --chart-1: 12 76% 61%;
+    --chart-1: 215 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --chart-4: 215 74% 66%;
+    --chart-5: 230 87% 67%;
+
+    /* Focus colors */
+    --highlight-low: 215 95% 96%;
+    --highlight-medium: 215 90% 92%;
+    --highlight-high: 215 85% 88%;
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-    --primary: 20.5 90.2% 48.2%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
+    --background: 215 14.3% 8.1%;
+    --foreground: 215 9.1% 97.8%;
+    --card: 215 14.3% 8.1%;
+    --card-foreground: 215 9.1% 97.8%;
+    --popover: 215 14.3% 8.1%;
+    --popover-foreground: 215 9.1% 97.8%;
+    --primary: 215 90.2% 45%;
+    --primary-foreground: 215 9.1% 97.8%;
+    --secondary: 215 6.5% 15.1%;
+    --secondary-foreground: 215 9.1% 97.8%;
+    --muted: 215 6.5% 15.1%;
+    --muted-foreground: 215 5.4% 63.9%;
+    --accent: 215 6.5% 15.1%;
+    --accent-foreground: 215 9.1% 97.8%;
     --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 20.5 90.2% 48.2%;
+    --destructive-foreground: 215 9.1% 97.8%;
+    --border: 215 6.5% 15.1%;
+    --input: 215 6.5% 15.1%;
+    --ring: 215 90.2% 45%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-3: 180 80% 55%;
+    --chart-4: 215 65% 60%;
+    --chart-5: 240 75% 55%;
+
+    /* Focus colors */
+    --highlight-low: 215 80% 15%;
+    --highlight-medium: 215 80% 20%;
+    --highlight-high: 215 80% 25%;
   }
 }
 
@@ -69,51 +79,112 @@
   }
 }
 
-/* Enhanced card styles */
+/* Modern enhanced card styles */
 @layer components {
   .card {
-    @apply shadow-md hover:shadow-lg transition-shadow duration-300;
+    @apply shadow-sm hover:shadow-md transition-all duration-300 backdrop-blur-[2px] bg-card/90;
+  }
+
+  /* Priority card styling with refined glow effect */
+  .priority-card {
+    @apply border-primary/10 relative rounded-xl overflow-hidden;
+    box-shadow: 0 5px 30px rgba(30, 64, 175, 0.08),
+      0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  .priority-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(30, 64, 175, 0.12),
+      0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .priority-card::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl pointer-events-none;
+    background: linear-gradient(
+      145deg,
+      hsl(var(--primary)) 0%,
+      transparent 15%,
+      transparent 85%,
+      hsl(var(--primary)) 100%
+    );
+    opacity: 0.08;
+    z-index: -1;
+  }
+
+  .priority-card .card-header-gradient {
+    @apply bg-gradient-to-r from-primary/5 via-white to-muted/5;
   }
 
   /* Enhanced card header styling */
   .card-header-gradient {
-    @apply bg-gradient-to-r from-background via-background to-muted/10 border-b py-5;
+    @apply bg-gradient-to-r from-primary/5 via-white to-muted/5 border-b border-primary/5;
   }
 
-  /* Elegant title styling (without icons) */
+  /* Elegant title styling with animated accent */
   .elegant-title {
-    @apply relative text-lg font-medium pl-3 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-primary before:to-primary/60 before:rounded-full;
+    @apply relative text-base font-semibold tracking-wide pl-3 uppercase before:absolute before:left-0 before:top-1/4 before:bottom-1/4 before:w-[3px] before:bg-gradient-to-b before:from-primary before:to-primary/60 before:rounded-full;
   }
 
-  /* Suggestion items styling */
-  .suggestion-item {
-    @apply bg-gradient-to-r from-primary/5 to-transparent border border-primary/10 rounded-md p-3 hover:from-primary/10 hover:to-primary/5 hover:border-primary/20 hover:shadow-md transition-all duration-200;
+  /* Process card styling */
+  .process-card {
+    @apply border-0 shadow-md overflow-hidden bg-gradient-to-r from-primary/5 to-transparent rounded-lg;
+    backdrop-filter: blur(5px);
   }
 
-  .suggestion-item-active {
-    @apply bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 shadow-sm;
+  .process-card-header {
+    @apply px-4 py-3 border-b border-primary/5 bg-gradient-to-r from-primary/5 to-transparent;
   }
 
-  /* Process steps enhanced styling */
+  /* Emphasis section styling */
+  .emphasis-section {
+    @apply border-l-2 border-primary/70 mb-3 pl-3 py-1;
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary) / 5%),
+      transparent
+    );
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .emphasis-title {
+    @apply text-sm font-medium text-primary mb-1;
+  }
+
+  /* Process substeps & focus items with hover effects */
   .process-substep {
-    @apply relative pl-6 py-2 border-l border-primary/10 hover:border-primary/40 transition-colors duration-200;
-  }
-
-  .process-substep-dot {
-    @apply absolute left-[-4px] w-2 h-2 rounded-full bg-primary/20 border border-primary/30;
+    @apply py-2 px-4 rounded-md transition-all duration-200 cursor-pointer hover:bg-primary/5;
   }
 
   .process-substep-active {
-    @apply border-l-2 border-primary bg-gradient-to-r from-primary/5 to-transparent;
+    @apply bg-gradient-to-r from-primary/10 to-transparent font-medium;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
-  /* Message bubble styles */
+  /* Suggested responses styling - matching process steps */
+  .suggestion-item {
+    @apply py-2.5 px-4 rounded-md transition-all duration-200 cursor-pointer hover:bg-primary/5 flex items-start;
+    border: 1px solid transparent;
+  }
+
+  .suggestion-item:hover {
+    @apply border-primary/10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .suggestion-item-active {
+    @apply bg-gradient-to-r from-primary/10 to-transparent font-medium border-primary/20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Message bubble styles with refined gradients */
   .message-bubble-user {
-    @apply bg-gradient-to-br from-primary/90 to-primary text-primary-foreground rounded-2xl rounded-bl-none;
+    @apply bg-gradient-to-br from-primary/90 to-primary text-primary-foreground rounded-2xl rounded-bl-none shadow-sm;
   }
 
   .message-bubble-system {
-    @apply bg-gradient-to-br from-secondary/90 to-secondary text-secondary-foreground rounded-2xl rounded-br-none;
+    @apply bg-gradient-to-br from-secondary/80 to-secondary/95 text-secondary-foreground rounded-2xl rounded-br-none shadow-sm;
   }
 
   /* Process tree enhancements */
@@ -122,28 +193,69 @@
   }
 
   .process-step-active {
-    @apply border-l-4 border-primary;
+    @apply border-l-4 border-primary rounded-l-none rounded-r-md;
   }
 
-  /* Process tree step progress indicators */
+  /* Process tree step progress indicators with improved visuals */
   .step-indicator {
-    @apply flex items-center justify-center h-7 w-7 rounded-full shadow-md;
+    @apply flex items-center justify-center h-7 w-7 rounded-full shadow-sm;
   }
 
   .step-indicator-completed {
-    @apply bg-gradient-to-br from-green-400 to-green-500 text-white;
+    @apply bg-gradient-to-br from-green-400/90 to-green-500 text-white;
+    box-shadow: 0 2px 5px rgba(74, 222, 128, 0.3);
   }
 
   .step-indicator-current {
-    @apply bg-gradient-to-br from-primary to-primary/80 text-primary-foreground;
+    @apply bg-gradient-to-br from-primary/90 to-primary text-primary-foreground;
+    box-shadow: 0 2px 5px rgba(30, 64, 175, 0.3);
   }
 
   .step-indicator-pending {
-    @apply bg-gradient-to-br from-muted/80 to-muted text-muted-foreground;
+    @apply bg-gradient-to-br from-muted/70 to-muted/90 text-muted-foreground;
   }
 
-  /* Animation utilities */
+  /* Enhanced animation utilities */
   .animate-in-right {
     @apply animate-fade-in-up;
+    animation-duration: 400ms;
+  }
+
+  /* Fade in animation */
+  @keyframes subtle-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .subtle-fade-in {
+    animation: subtle-fade-in 0.5s ease forwards;
+  }
+
+  /* Button hover effects */
+  .action-button {
+    @apply transition-all duration-200 hover:scale-105 active:scale-95;
+  }
+
+  /* Modern scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/30;
   }
 }
