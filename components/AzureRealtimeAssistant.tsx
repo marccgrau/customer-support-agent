@@ -261,14 +261,9 @@ const AzureRealtimeAssistant: React.FC<RealtimeAssistantProps> = ({
 
   return (
     <div className='h-full'>
-      <Card className='h-full flex flex-col'>
-        <CardHeader className='p-4 flex flex-row items-center justify-between border-b flex-shrink-0'>
-          <div className='flex items-center'>
-            <div className='flex items-center gap-2'>
-              <BrainCircuit className='h-5 w-5 text-primary' />
-              <CardTitle>Conversation</CardTitle>
-            </div>
-          </div>
+      <Card className='h-full flex flex-col card'>
+        <CardHeader className='p-4 flex flex-row items-center justify-between card-header-gradient'>
+          <CardTitle className='elegant-title'>Conversation</CardTitle>
         </CardHeader>
 
         <CardContent className='flex-1 p-4 overflow-auto'>

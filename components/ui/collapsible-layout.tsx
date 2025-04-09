@@ -30,9 +30,9 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
             variant='ghost'
             className={cn(
               'h-[250px] w-16 grid grid-rows-[1fr,auto] p-2 rounded-md',
-              'border border-border hover:border-border/80',
-              'hover:bg-secondary/40 group',
-              'transition-all duration-200'
+              'border border-primary/30 hover:border-primary/60',
+              'bg-gradient-to-b from-muted/20 to-muted/10 hover:shadow-md',
+              'group transition-all duration-200'
             )}
             onClick={onToggle}
           >
@@ -41,7 +41,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
               {/* Title container - using flex for centering */}
               <div className='flex-1 flex items-center justify-center relative'>
                 <div className='absolute rotate-90 whitespace-nowrap origin-center'>
-                  <span className='text-sm font-medium text-foreground/80 group-hover:text-foreground'>
+                  <span className='text-sm font-medium text-foreground/80 group-hover:text-foreground group-hover:font-semibold transition-all border-b-2 border-primary/0 group-hover:border-primary/40 pb-0.5'>
                     {title}
                   </span>
                 </div>
@@ -49,20 +49,22 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
               {/* Chevron at bottom */}
               <div className='flex justify-center pb-2'>
-                <ChevronRight className='h-4 w-4 text-muted-foreground group-hover:text-foreground/80 transition-colors' />
+                <div className='w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors'>
+                  <ChevronRight className='h-4 w-4 text-primary group-hover:text-primary group-hover:scale-110 transition-all' />
+                </div>
               </div>
             </div>
           </Button>
         </div>
       ) : (
-        <div className='h-full relative bg-background'>
+        <div className='h-full relative bg-background animate-fade-in-up'>
           <Button
-            variant='ghost'
+            variant='outline'
             size='icon'
-            className='absolute top-2 right-2 z-10'
+            className='absolute top-2 right-2 z-10 bg-background/80 backdrop-blur-sm border-primary/30 hover:border-primary/60 hover:shadow-md transition-all'
             onClick={onToggle}
           >
-            <ChevronLeft className='h-4 w-4' />
+            <ChevronLeft className='h-4 w-4 text-primary' />
           </Button>
           <div className='h-full'>{children}</div>
         </div>

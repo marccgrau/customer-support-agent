@@ -16,12 +16,9 @@ const SuggestionsCard: React.FC<SuggestionsCardProps> = ({
       : null;
 
   return (
-    <Card className='h-full flex flex-col'>
-      <CardHeader className='p-4 flex flex-row items-center justify-between border-b flex-shrink-0'>
-        <div className='flex items-center gap-2'>
-          <Lightbulb className='h-4 w-4 text-primary' />
-          <CardTitle className='text-base'>Conversation Guide</CardTitle>
-        </div>
+    <Card className='h-full flex flex-col card'>
+      <CardHeader className='p-4 flex flex-row items-center justify-between card-header-gradient'>
+        <CardTitle className='elegant-title'>Conversation Guide</CardTitle>
       </CardHeader>
 
       <CardContent className='flex-1 p-4 overflow-y-auto'>
@@ -31,11 +28,11 @@ const SuggestionsCard: React.FC<SuggestionsCardProps> = ({
           </div>
         ) : latestSuggestion?.response.suggested_questions.length ? (
           <div className='space-y-4'>
-            <div className='text-sm text-muted-foreground'>
-              <p>
+            <div className='pl-3 border-l-2 border-primary/70 mb-4'>
+              <h3 className='text-sm font-medium text-primary/90'>
                 Consider these conversation directions based on the current
                 context:
-              </p>
+              </h3>
             </div>
 
             <div className='grid gap-3'>
@@ -43,31 +40,40 @@ const SuggestionsCard: React.FC<SuggestionsCardProps> = ({
                 (question, index) => (
                   <div
                     key={index}
-                    className='group relative bg-muted/30 hover:bg-primary/5 rounded-lg p-4 transition-colors cursor-pointer border border-muted hover:border-primary/20'
+                    className={`suggestion-item ${
+                      index === 0 ? 'suggestion-item-active' : ''
+                    } animate-fade-in`}
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <div className='flex items-start gap-3'>
                       {/* Icon */}
-                      <div className='mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center'>
+                      <div className='mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-inner'>
                         <Lightbulb className='w-3 h-3' />
                       </div>
 
                       {/* Question text */}
                       <div className='flex-1'>
-                        <div className='text-sm font-medium text-foreground group-hover:text-primary transition-colors'>
+                        <div
+                          className={`text-sm ${
+                            index === 0
+                              ? 'font-medium text-foreground'
+                              : 'text-muted-foreground'
+                          }`}
+                        >
                           {question}
                         </div>
                       </div>
                     </div>
-
-                    {/* Subtle highlight effect on hover */}
-                    <div className='absolute inset-0 border-2 border-primary/0 rounded-lg group-hover:border-primary/10 transition-colors' />
                   </div>
                 )
               )}
             </div>
           </div>
         ) : (
-          <div className='flex items-center justify-center h-32 text-muted-foreground text-sm'>
+          <div className='flex flex-col items-center justify-center h-32 text-muted-foreground text-sm gap-3'>
+            <div className='w-8 h-8 rounded-full bg-muted/30 flex items-center justify-center'>
+              <Lightbulb className='w-4 h-4 text-muted-foreground' />
+            </div>
             Waiting for conversation context...
           </div>
         )}

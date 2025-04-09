@@ -61,7 +61,11 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
     <div className={`${containerStyles} ${className}`}>
       <div className={headerStyles} onClick={() => setIsExpanded(!isExpanded)}>
         <div className='flex items-center gap-2'>
-          {icon}
+          {icon && (
+            <div className='flex-shrink-0 w-6 h-6 flex items-center justify-center bg-primary/10 rounded-md text-primary'>
+              {icon}
+            </div>
+          )}
           <div className={`${isNested ? 'text-sm' : ''} font-medium`}>
             {title}
           </div>
@@ -70,11 +74,13 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           {headerExtra && (
             <div onClick={(e) => e.stopPropagation()}>{headerExtra}</div>
           )}
-          {isExpanded ? (
-            <ChevronUp className='h-4 w-4 text-muted-foreground' />
-          ) : (
-            <ChevronDown className='h-4 w-4 text-muted-foreground' />
-          )}
+          <div className='bg-muted/30 rounded-full w-6 h-6 flex items-center justify-center text-primary'>
+            {isExpanded ? (
+              <ChevronUp className='h-4 w-4' />
+            ) : (
+              <ChevronDown className='h-4 w-4' />
+            )}
+          </div>
         </div>
       </div>
       <div className={contentStyles}>

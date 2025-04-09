@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { HiOutlineCheckCircle } from 'react-icons/hi';
-import { Network, ChevronRight } from 'lucide-react';
+import { HiOutlineCheckCircle, HiChevronRight } from 'react-icons/hi';
+import { Network } from 'lucide-react';
 
 const ProcessTree = () => {
   const processSteps = [
@@ -91,12 +91,9 @@ const ProcessTree = () => {
       : 80; // Single card height
 
   return (
-    <Card className='h-full flex flex-col'>
-      <CardHeader className='p-4 flex flex-row items-center justify-between border-b flex-shrink-0'>
-        <div className='flex items-center gap-2'>
-          <Network className='h-4 w-4 text-primary' />
-          <CardTitle className='text-base'>Request Handling</CardTitle>
-        </div>
+    <Card className='h-full flex flex-col card'>
+      <CardHeader className='p-4 flex flex-row items-center justify-between card-header-gradient'>
+        <CardTitle className='elegant-title'>Request Handling</CardTitle>
       </CardHeader>
 
       <CardContent className='flex-1 p-4 overflow-y-auto'>
@@ -110,9 +107,9 @@ const ProcessTree = () => {
                 .map((step, index) => (
                   <Card
                     key={step.id}
-                    className={`absolute w-full bg-green-50 border-green-200 ${
+                    className={`absolute w-full bg-gradient-to-r from-green-50 to-green-50/50 border-green-200 shadow-md ${
                       index === 0 ? 'bg-white' : ''
-                    }`}
+                    } transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg process-step`}
                     style={{
                       top: `${index * 8}px`,
                       zIndex: resolvedSteps.length - index,
@@ -120,8 +117,8 @@ const ProcessTree = () => {
                   >
                     <CardContent className='p-3'>
                       <div className='flex items-start gap-4'>
-                        <div className='w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-green-500 text-green-500'>
-                          <HiOutlineCheckCircle />
+                        <div className='step-indicator step-indicator-completed'>
+                          <HiOutlineCheckCircle className='h-4 w-4' />
                         </div>
                         <div className='flex-1'>
                           <div className='text-sm font-medium text-green-700'>
@@ -140,43 +137,60 @@ const ProcessTree = () => {
 
           {/* Current Active Step with Substeps */}
           {currentStep && (
-            <Card className='relative border border-primary shadow-sm overflow-hidden'>
-              <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary' />
-              <CardContent className='p-4'>
-                {/* Main step header */}
-                <div className='flex items-center gap-4 mb-4'>
-                  <div className='w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-primary text-primary font-semibold'>
+            <Card className='relative border-0 shadow-lg overflow-hidden animate-fade-in-up bg-gradient-to-r from-primary/5 to-transparent'>
+              <div className='px-4 py-3 border-b border-primary/10 bg-gradient-to-r from-primary/10 to-transparent'>
+                <div className='flex items-center gap-4'>
+                  <div className='step-indicator step-indicator-current'>
                     {resolvedSteps.length + 1}
                   </div>
-                  <div className='text-sm font-medium text-primary'>
+                  <div className='text-base font-medium text-foreground'>
                     {currentStep.title}
                   </div>
                 </div>
-
-                {/* Substeps */}
-                <div className='ml-10 space-y-2'>
-                  {currentStep.substeps.map((substep) => (
-                    <div
-                      key={substep.id}
-                      className='flex items-center gap-3 p-2 text-sm text-muted-foreground hover:text-foreground transition-colors'
-                    >
-                      <div className='h-1.5 w-1.5 rounded-full bg-primary/40' />
-                      <span>{substep.title}</span>
-                    </div>
-                  ))}
+                <div className='ml-11 mt-1 text-sm text-muted-foreground'>
+                  {currentStep.description}
                 </div>
-              </CardContent>
+              </div>
+
+              {/* Substeps */}
+              <div className='p-3 space-y-1 bg-gradient-to-br from-white to-muted/5'>
+                {currentStep.substeps.map((substep, index) => (
+                  <div
+                    key={substep.id}
+                    className={`process-substep ${
+                      index === 0 ? 'process-substep-active' : ''
+                    } animate-fade-in`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className='process-substep-dot'></div>
+                    <div className='flex items-center gap-2'>
+                      <span
+                        className={`text-sm ${
+                          index === 0
+                            ? 'font-medium text-primary'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        {substep.title}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </Card>
           )}
 
           {/* Remaining Steps */}
           {remainingSteps.length > 0 && (
-            <div className='space-y-4 opacity-60'>
+            <div className='space-y-4 opacity-80'>
               {remainingSteps.map((step, index) => (
-                <Card key={step.id} className='border-gray-200'>
+                <Card
+                  key={step.id}
+                  className='border-0 shadow-sm hover:shadow transition-all duration-300 ease-in-out hover:opacity-90 process-step'
+                >
                   <CardContent className='p-4'>
                     <div className='flex items-start gap-4'>
-                      <div className='w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-gray-300 text-gray-500'>
+                      <div className='step-indicator step-indicator-pending'>
                         {resolvedSteps.length + index + 2}
                       </div>
                       <div className='flex-1'>

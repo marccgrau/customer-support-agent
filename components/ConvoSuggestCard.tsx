@@ -43,23 +43,22 @@ const ConvoSuggestCard: React.FC<ConvoSuggestCardProps> = ({
     latestSuggestion.response.suggested_questions.length > 0;
 
   return (
-    <Card className='h-full flex flex-col'>
-      <CardHeader className='p-4 flex flex-row items-center justify-between border-b flex-shrink-0'>
-        <div className='flex items-center gap-2'>
-          <MessageCircle className='h-4 w-4 text-primary' />
-          <CardTitle className='text-base'>Conversation Monitor</CardTitle>
-        </div>
+    <Card className='h-full flex flex-col card'>
+      <CardHeader className='p-4 flex flex-row items-center justify-between card-header-gradient'>
+        <CardTitle className='elegant-title'>Conversation Monitor</CardTitle>
       </CardHeader>
 
       <CardContent className='flex-1 p-4 overflow-y-auto'>
         <div className='space-y-6'>
           {/* Recording Control Section */}
-          <div className='flex items-center gap-3 p-3 bg-muted/30 rounded-lg'>
+          <div className='flex items-center gap-3 p-3 bg-gradient-to-r from-muted to-muted/20 rounded-lg animate-fade-in'>
             <Button
               variant={isListening ? 'destructive' : 'secondary'}
               size='sm'
               onClick={toggleListening}
-              className='h-8 w-8 p-0'
+              className={`h-8 w-8 p-0 transition-all duration-300 ${
+                isListening ? 'shadow-md shadow-destructive/30' : 'shadow-sm'
+              }`}
               disabled={isLoading}
             >
               <Mic
@@ -83,14 +82,21 @@ const ConvoSuggestCard: React.FC<ConvoSuggestCardProps> = ({
           {/* Conversation Flow */}
           <div className='space-y-4'>
             {/* Latest Messages */}
-            {latestMessages.map((message) => (
+            {latestMessages.map((message, index) => (
               <div
                 key={message.id}
                 className={`flex items-start gap-2 ${
                   message.type === 'system' ? 'flex-row-reverse' : 'flex-row'
-                }`}
+                } animate-in-right`}
+                style={{ animationDelay: `${index * 150}ms` }}
               >
-                <Avatar className='h-8 w-8'>
+                <Avatar
+                  className={`h-8 w-8 ${
+                    message.type === 'user'
+                      ? 'bg-primary/10 border border-primary/30'
+                      : 'bg-secondary/30 border border-secondary/30'
+                  } shadow-sm`}
+                >
                   <AvatarFallback>
                     {message.type === 'user' ? (
                       <User className='h-4 w-4' />
@@ -109,10 +115,10 @@ const ConvoSuggestCard: React.FC<ConvoSuggestCardProps> = ({
                     {new Date(message.timestamp).toLocaleTimeString()}
                   </div>
                   <div
-                    className={`p-3 rounded-lg text-sm ${
+                    className={`p-3 text-sm shadow-sm ${
                       message.type === 'user'
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'bg-gray-100 text-gray-900'
+                        ? 'message-bubble-user'
+                        : 'message-bubble-system'
                     }`}
                   >
                     {message.text}
@@ -128,43 +134,43 @@ const ConvoSuggestCard: React.FC<ConvoSuggestCardProps> = ({
               </div>
             ) : (
               hasSuggestions && (
-                <Card className='relative border border-primary shadow-sm overflow-hidden'>
-                  <div className='absolute left-0 top-0 bottom-0 w-1 bg-primary' />
-                  <CardContent className='p-4'>
-                    {/* Header with number and title */}
-                    <div className='flex items-center gap-4 mb-4'>
-                      <div className='w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center border-2 border-primary text-primary'>
-                        <Lightbulb className='h-3.5 w-3.5' />
-                      </div>
-                      <div className='text-sm font-medium text-primary'>
-                        Suggested responses
-                      </div>
-                    </div>
+                <Card className='relative overflow-hidden animate-fade-in-up-fast border-0 shadow-none'>
+                  <div className='mb-3 pl-3 border-l-2 border-primary/70'>
+                    <h3 className='text-sm font-medium text-primary/90'>
+                      Suggested responses
+                    </h3>
+                  </div>
 
-                    {/* Suggestions */}
-                    <div className='ml-10 space-y-2'>
-                      {latestSuggestion.response.suggested_questions.map(
-                        (question, index) => (
-                          <div
-                            key={index}
-                            className={`flex items-center gap-3 p-2 text-sm
-                            ${
-                              index === 0
-                                ? 'text-foreground font-medium'
-                                : 'text-muted-foreground hover:text-foreground transition-colors'
-                            }`}
-                          >
-                            <div
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                index === 0 ? 'bg-primary' : 'bg-primary/40'
-                              }`}
-                            />
-                            <span>{question}</span>
+                  <div className='space-y-2'>
+                    {latestSuggestion.response.suggested_questions.map(
+                      (question, index) => (
+                        <div
+                          key={index}
+                          className={`suggestion-item ${
+                            index === 0 ? 'suggestion-item-active' : ''
+                          } animate-fade-in`}
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <div className='flex items-start gap-3'>
+                            <div className='mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-primary/10 text-primary'>
+                              <Lightbulb className='h-3 w-3' />
+                            </div>
+                            <div className='flex-1'>
+                              <div
+                                className={`text-sm ${
+                                  index === 0
+                                    ? 'font-medium text-foreground'
+                                    : 'text-muted-foreground'
+                                }`}
+                              >
+                                {question}
+                              </div>
+                            </div>
                           </div>
-                        )
-                      )}
-                    </div>
-                  </CardContent>
+                        </div>
+                      )
+                    )}
+                  </div>
                 </Card>
               )
             )}
